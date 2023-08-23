@@ -1,8 +1,7 @@
 package ru.practicum.shareit.item.storage;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class ItemInMemoryStorage implements ItemStorage {
     @Override
     public Item getById(long itemId) {
         if (!storageMap.containsKey(itemId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Вещь не найдена");
+            throw new ItemNotFoundException("Вещь не найдена");
         }
 
         return storageMap.get(itemId);
@@ -49,12 +48,13 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item update(Item item, long itemId) {
+        if (!storageMap.containsKey(itemId)) {
+            throw new ItemNotFoundException("Вещь не найдена");
+        }
         Item stored = storageMap.get(itemId);
-
         stored.setName(item.getName());
         stored.setDescription(item.getDescription());
         stored.setAvailable(item.getAvailable());
-
         return stored;
     }
 

@@ -1,9 +1,8 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.shareit.exception.InvalidUpdateException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -50,7 +49,7 @@ public class UserServiceImpl implements UserService {
         if (violations.isEmpty()) {
             return UserMapper.toUserDto(userStorage.update(UserMapper.fromUserDto(userDto), userId));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Некорректное значение для обновления");
+            throw new InvalidUpdateException("Некорректное значение для обновления");
         }
     }
 

@@ -1,9 +1,9 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.shareit.exception.InvalidUpdateException;
+import ru.practicum.shareit.exception.OwnershipViolationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userStorage.getById(userId);
         Item stored = itemStorage.getById(itemId);
         if (!stored.getOwner().equals(user)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Редактирование вещи доступно только владельцу");
+            throw new OwnershipViolationException("Редактирование вещи доступно только владельцу");
         }
         itemDto.setId(itemId);
         itemDto.setName(itemDto.getName() == null ? stored.getName() : itemDto.getName());
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
         if (violations.isEmpty()) {
             return ItemMapper.toItemDto(itemStorage.update(ItemMapper.fromItemDto(itemDto), itemId));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Некорректное значение для обновления");
+            throw new InvalidUpdateException("Некорректное значение для обновления");
         }
     }
 

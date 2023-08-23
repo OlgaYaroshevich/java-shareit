@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.storage;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.shareit.exception.EmailConflictException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class UserInMemoryStorage implements UserStorage {
     @Override
     public User create(User user) {
         if (isEmailUsed(user)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email уже занят");
+            throw new EmailConflictException("Email уже занят");
         }
         user.setId(id++);
         storageMap.put(user.getId(), user);
@@ -27,7 +27,7 @@ public class UserInMemoryStorage implements UserStorage {
     @Override
     public User getById(long userId) {
         if (!storageMap.containsKey(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+            throw new UserNotFoundException("Пользователь не найден");
         }
         return storageMap.get(userId);
     }
@@ -40,7 +40,7 @@ public class UserInMemoryStorage implements UserStorage {
     @Override
     public User update(User user, long userId) {
         if (isEmailUsed(user)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email уже занят");
+            throw new EmailConflictException("Email уже занят");
         }
         User stored = storageMap.get(userId);
         stored.setName(user.getName());
