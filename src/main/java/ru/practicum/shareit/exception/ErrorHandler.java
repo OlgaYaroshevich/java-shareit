@@ -55,7 +55,7 @@ public class ErrorHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchStateForBookingSearchException.class)
-    public ResponseEntity<String> handleNoSuchStateForBookingSearchException (NoSuchStateForBookingSearchException  ex) {
+    public ResponseEntity<String> handleNoSuchStateForBookingSearchException(NoSuchStateForBookingSearchException  ex) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(ex.getMessage());
     }
 
@@ -65,7 +65,7 @@ public class ErrorHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(BookingNotWaitingForApprovalException.class)
-    public ResponseEntity<String> handleBookingNotWaitingForApprovalException (BookingNotWaitingForApprovalException  ex) {
+    public ResponseEntity<String> handleBookingNotWaitingForApprovalException(BookingNotWaitingForApprovalException  ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
