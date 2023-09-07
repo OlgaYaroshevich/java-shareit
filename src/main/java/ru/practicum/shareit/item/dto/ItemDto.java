@@ -20,6 +20,7 @@ public class ItemDto {
     private ItemBooking nextBooking;
     private ItemBooking lastBooking;
     private List<CommentDto> comments;
+
     @Data
     @Builder
     public static class ItemBooking {
