@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -36,7 +37,6 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
-    @Transactional
     public ItemDto create(ItemDto itemDto, long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
@@ -47,7 +47,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public CommentDto createComment(CommentDto commentDto, long userId, long itemId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
@@ -97,7 +96,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public ItemDto update(ItemDto itemDto, long itemId, long userId) {
         Item stored = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         if (!stored.getOwner().getId().equals(userId)) {
@@ -118,7 +116,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public void delete(long itemId) {
         itemRepository.deleteById(itemId);
     }

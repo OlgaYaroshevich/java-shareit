@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
     public UserDto create(UserDto userDto) {
         User user = UserMapper.fromDto(userDto);
         try {
@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto update(UserDto userDto, long userId) {
         User stored = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Optional.ofNullable(userDto.getName()).ifPresent(stored::setName);
@@ -72,7 +71,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public void delete(long userId) {
         userRepository.deleteById(userId);
     }
