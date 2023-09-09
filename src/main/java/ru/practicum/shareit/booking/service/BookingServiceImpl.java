@@ -32,9 +32,9 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public BookingResponseDto getById(long bookingId, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Бронирование не найдено"));
+                .orElseThrow(() -> new NotFoundException("Бронирование не найдено"));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (!(booking.getUser().getId() == userId || booking.getItem().getOwner().getId() == userId)) {
             throw new BookingNotBelongException("Не найдено подходящих бронирований для пользователя " + userId);
         }
@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllByState(RequestBookingStatus requestBookingStatus, long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         switch (requestBookingStatus) {
             case ALL:
                 return bookingRepository.findAllByUserIdOrderByStartDesc(userId).stream()
@@ -80,7 +80,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllByStateForOwner(RequestBookingStatus requestBookingStatus, long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         switch (requestBookingStatus) {
             case ALL:
                 return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId).stream()
@@ -115,14 +115,14 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponseDto create(BookingRequestDto bookingRequestDto, long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = itemRepository.findById(bookingRequestDto.getItemId())
-                .orElseThrow(() -> new ItemNotFoundException("Вещь не найдена"));
+                .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         if (!item.getAvailable()) {
             throw new ItemNotAvailableException("Вещь недоступна для бронирования");
         }
         if (item.getOwner().getId() == userId) {
-            throw new ItemNotFoundException("Владелец не может бронировать свою вещь");
+            throw new NotFoundException("Владелец не может бронировать свою вещь");
         }
         Booking booking = BookingMapper.fromDto(bookingRequestDto);
         booking.setUser(user);
@@ -135,11 +135,11 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponseDto approve(long bookingId, boolean approved, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Бронирование не найдено"));
+                .orElseThrow(() -> new NotFoundException("Бронирование не найдено"));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (booking.getItem().getOwner().getId() != userId) {
-            throw new BookingNotFoundException("Подтверждение доступно только для владельца вещи");
+            throw new NotFoundException("Подтверждение доступно только для владельца вещи");
         }
         if (booking.getStatus() != BookingStatus.WAITING) {
             throw new BookingNotWaitingForApprovalException("Вещь не ожидает подтверждения");

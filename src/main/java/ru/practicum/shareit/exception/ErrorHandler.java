@@ -14,18 +14,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @Slf4j
 public class ErrorHandler {
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<String> handleItemNotFoundException(ItemNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @org.springframework.web.bind.annotation.ExceptionHandler(BookingNotFoundException.class)
-    public ResponseEntity<String> handleBookingNotFoundException(BookingNotFoundException ex) {
+    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 

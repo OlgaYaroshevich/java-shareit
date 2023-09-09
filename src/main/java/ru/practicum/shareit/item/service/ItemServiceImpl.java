@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto create(ItemDto itemDto, long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         Item item = ItemMapper.fromDto(itemDto);
         item.setOwner(user);
@@ -50,9 +50,9 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public CommentDto createComment(CommentDto commentDto, long userId, long itemId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Вещь не найдена"));
+                .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         Comment comment = CommentMapper.fromDto(commentDto);
         if (bookingRepository.findAllApprovedByItemIdAndUserId(itemId, userId, LocalDateTime.now()).isEmpty()) {
             throw new CommentWithoutBookingException("Комментарии можно оставлять только к тем вещам, на которые было бронирование");
@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public ItemDto getById(long userId, long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Вещь не найдена"));
+                .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         ItemDto itemDto = ItemMapper.toDto(item);
         itemDto = (item.getOwner().getId() == userId) ? addBookingInfo(itemDto) : itemDto;
         itemDto = addComments(itemDto);
@@ -99,7 +99,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto update(ItemDto itemDto, long itemId, long userId) {
-        Item stored = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Вещь не найдена"));
+        Item stored = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         if (!stored.getOwner().getId().equals(userId)) {
             throw new ItemNotBelongToUserException("Редактирование вещи доступно только владельцу");
         }

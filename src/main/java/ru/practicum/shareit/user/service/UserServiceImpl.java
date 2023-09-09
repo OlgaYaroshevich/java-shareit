@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DataConflictException;
 import ru.practicum.shareit.exception.InvalidDataException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getById(long userId) {
         return userRepository.findById(userId)
                 .map(UserMapper::toDto)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto update(UserDto userDto, long userId) {
-        User stored = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+        User stored = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Optional.ofNullable(userDto.getName()).ifPresent(stored::setName);
         Optional.ofNullable(userDto.getEmail()).ifPresent(stored::setEmail);
         if (isValid(UserMapper.toDto(stored))) {
