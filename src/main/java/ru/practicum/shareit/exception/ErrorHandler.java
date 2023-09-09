@@ -14,55 +14,64 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @Slf4j
 public class ErrorHandler {
 
-
-    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
+        log.debug("Resource not found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidDataException.class)
-    public ResponseEntity<String> handleInvalidDataException(InvalidDataException  ex) {
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<String> handleInvalidDataException(InvalidDataException ex) {
+        log.debug("Invalid data: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(DataConflictException.class)
-    public ResponseEntity<String> handleDataConflictException(DataConflictException  ex) {
+    @ExceptionHandler(DataConflictException.class)
+    public ResponseEntity<String> handleDataConflictException(DataConflictException ex) {
+        log.debug("Data conflict: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(CommentWithoutBookingException.class)
-    public ResponseEntity<String> handleCommentWithoutBookingException(CommentWithoutBookingException  ex) {
+    @ExceptionHandler(CommentWithoutBookingException.class)
+    public ResponseEntity<String> handleCommentWithoutBookingException(CommentWithoutBookingException ex) {
+        log.debug("Comment without booking: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(ItemNotBelongToUserException.class)
-    public ResponseEntity<String> handleItemNotBelongToUserException(ItemNotBelongToUserException  ex) {
+    @ExceptionHandler(ItemNotBelongToUserException.class)
+    public ResponseEntity<String> handleItemNotBelongToUserException(ItemNotBelongToUserException ex) {
+        log.debug("Item does not belong to user: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(BookingNotBelongException.class)
-    public ResponseEntity<String> handleBookingNotBelongException(BookingNotBelongException  ex) {
+    @ExceptionHandler(BookingNotBelongException.class)
+    public ResponseEntity<String> handleBookingNotBelongException(BookingNotBelongException ex) {
+        log.debug("Booking does not belong to user: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchStateForBookingSearchException.class)
-    public ResponseEntity<String> handleNoSuchStateForBookingSearchException(NoSuchStateForBookingSearchException  ex) {
+    @ExceptionHandler(NoSuchStateForBookingSearchException.class)
+    public ResponseEntity<String> handleNoSuchStateForBookingSearchException(NoSuchStateForBookingSearchException ex) {
+        log.debug("No such state for booking search: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(ItemNotAvailableException.class)
-    public ResponseEntity<String> handleItemNotAvailableException(ItemNotAvailableException  ex) {
+    @ExceptionHandler(ItemNotAvailableException.class)
+    public ResponseEntity<String> handleItemNotAvailableException(ItemNotAvailableException ex) {
+        log.debug("Item not available: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(BookingNotWaitingForApprovalException.class)
-    public ResponseEntity<String> handleBookingNotWaitingForApprovalException(BookingNotWaitingForApprovalException  ex) {
+    @ExceptionHandler(BookingNotWaitingForApprovalException.class)
+    public ResponseEntity<String> handleBookingNotWaitingForApprovalException(BookingNotWaitingForApprovalException ex) {
+        log.debug("Booking not waiting for approval: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.debug("Unknown state: UNSUPPORTED_STATUS", e);
         return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
     }
 }
