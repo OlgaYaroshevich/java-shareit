@@ -12,10 +12,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.BookingNotBelongException;
-import ru.practicum.shareit.exception.BookingNotWaitingForApprovalException;
-import ru.practicum.shareit.exception.ItemNotAvailableException;
-import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -195,6 +192,34 @@ public class BookingServiceTest {
         verify(bookingRepository, times(1)).findAllByItemOwnerIdAndStatusOrderByStartDesc(eq(owner.getId()), eq(BookingStatus.WAITING), any(Pageable.class));
         verify(bookingRepository, times(1)).findAllByItemOwnerIdAndStatusOrderByStartDesc(eq(owner.getId()), eq(BookingStatus.REJECTED), any(Pageable.class));
 
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository);
+    }
+
+    @Test
+    void getAllByStateTest_UnknownStatus() {
+        User booker = getUser(2);
+
+        when(userRepository.findById(eq(booker.getId()))).thenReturn(Optional.ofNullable(booker));
+
+        NoSuchStateForBookingSearchException e = assertThrows(NoSuchStateForBookingSearchException.class, () -> {
+            bookingService.getAllByState(RequestBookingStatus.UNKNOWN, booker.getId(), 0, 10);
+        });
+
+        verify(userRepository, times(1)).findById(eq(booker.getId()));
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository);
+    }
+
+    @Test
+    void getAllByStateForOwnerTest_UnknownStatus() {
+        User owner = getUser(1);
+
+        when(userRepository.findById(eq(owner.getId()))).thenReturn(Optional.ofNullable(owner));
+
+        NoSuchStateForBookingSearchException e = assertThrows(NoSuchStateForBookingSearchException.class, () -> {
+            bookingService.getAllByStateForOwner(RequestBookingStatus.UNKNOWN, owner.getId(), 0, 10);
+        });
+
+        verify(userRepository, times(1)).findById(eq(owner.getId()));
         verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository);
     }
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -183,6 +185,50 @@ public class ItemRequestServiceTest {
         verify(userRepository, times(1)).findById(eq(requestor.getId()));
         verify(itemRequestRepository, times(1)).findById(eq(itemRequest.getId()));
         verify(itemRepository, times(1)).findAllByItemRequestId(eq(itemRequest.getId()));
+        verifyNoMoreInteractions(itemRequestRepository, userRepository, itemRepository);
+    }
+
+    @Test
+    void getAllByRequestorIdNotFoundTest() {
+        int nonExistingUserId = 999;
+
+        when(userRepository.findById(nonExistingUserId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> itemRequestService.getAllByRequestorId(nonExistingUserId, 0, 10));
+
+        verify(userRepository, times(1)).findById(eq(nonExistingUserId));
+        verifyNoMoreInteractions(itemRequestRepository, userRepository, itemRepository);
+    }
+
+
+    @Test
+    void getByIdUserNotFoundTest() {
+        int nonExistingUserId = 999;
+        int itemRequestId = 10;
+
+        when(userRepository.findById(nonExistingUserId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> itemRequestService.getById(nonExistingUserId, itemRequestId));
+
+        verify(userRepository, times(1)).findById(eq(nonExistingUserId));
+        verifyNoMoreInteractions(itemRequestRepository, userRepository, itemRepository);
+    }
+
+    @Test
+    void getByIdItemRequestNotFoundTest() {
+        int userId = 1;
+        int nonExistingItemRequestId = 999;
+
+        when(userRepository.findById(eq(userId))).thenReturn(Optional.of(getUser(userId)));
+        when(itemRequestRepository.findById(eq(nonExistingItemRequestId))).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> itemRequestService.getById(userId, nonExistingItemRequestId));
+
+        verify(userRepository, times(1)).findById(eq(userId));
+        verify(itemRequestRepository, times(1)).findById(eq(nonExistingItemRequestId));
         verifyNoMoreInteractions(itemRequestRepository, userRepository, itemRepository);
     }
 

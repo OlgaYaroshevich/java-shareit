@@ -6,5 +6,6 @@ public enum RequestBookingStatus {
     PAST,
     FUTURE,
     WAITING,
-    REJECTED
+    REJECTED,
+    UNKNOWN
 }

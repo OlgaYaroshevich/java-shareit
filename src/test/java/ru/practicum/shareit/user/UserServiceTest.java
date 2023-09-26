@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.exception.DataConflictException;
 import ru.practicum.shareit.exception.InvalidDataException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -79,6 +80,20 @@ public class UserServiceTest {
     }
 
     @Test
+    void getByIdTest_NotFound() {
+        User user = getUser(1);
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
+            userService.getById(user.getId());
+        });
+
+        verify(userRepository, times(1)).findById(eq(user.getId()));
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
     void getAllTest() {
         User user1 = getUser(1);
         User user2 = getUser(2);
@@ -135,6 +150,22 @@ public class UserServiceTest {
         when(userRepository.findById(eq(user.getId()))).thenReturn(Optional.ofNullable(user));
 
         InvalidDataException e = assertThrows(InvalidDataException.class, () -> {
+            userService.update(inputDto, user.getId());
+        });
+
+        verify(userRepository, times(1)).findById(eq(user.getId()));
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void updateTest_NotFound() {
+        User user = getUser(1);
+
+        UserDto inputDto = UserDto.builder().build();
+
+        when(userRepository.findById(eq(user.getId()))).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
             userService.update(inputDto, user.getId());
         });
 

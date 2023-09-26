@@ -9,10 +9,7 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.CommentWithoutBookingException;
-import ru.practicum.shareit.exception.DataConflictException;
-import ru.practicum.shareit.exception.InvalidDataException;
-import ru.practicum.shareit.exception.ItemNotBelongToUserException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
@@ -91,6 +88,43 @@ public class ItemServiceTest {
     }
 
     @Test
+    void createTest_UserNotFound() {
+        int userId = 1;
+        ItemDto createDto = ItemDto.builder().build();
+
+        when(userRepository.findById(eq(userId))).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
+            itemService.create(createDto, userId);
+        });
+
+        verify(userRepository, times(1)).findById(eq(userId));
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
+    }
+
+    @Test
+    void createTest_ItemRequestNotFound() {
+        int userId = 1;
+        int requestId = 10;
+        ItemDto createDto = ItemDto.builder()
+                .requestId(requestId)
+                .build();
+
+        User user = getUser(userId);
+
+        when(userRepository.findById(eq(userId))).thenReturn(Optional.ofNullable(user));
+        when(itemRequestRepository.findById(eq(requestId))).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
+            itemService.create(createDto, userId);
+        });
+
+        verify(userRepository, times(1)).findById(eq(userId));
+        verify(itemRequestRepository, times(1)).findById(eq(requestId));
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
+    }
+
+    @Test
     void createCommentTest() {
         User user = getUser(1);
         Item item = getItem(10);
@@ -116,6 +150,42 @@ public class ItemServiceTest {
         verify(itemRepository, times(1)).findById(eq(item.getId()));
         verify(bookingRepository, times(1)).findAllApprovedByItemIdAndUserId(eq(item.getId()), eq(user.getId()), any(LocalDateTime.class));
         verify(commentRepository, times(1)).save(any(Comment.class));
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
+    }
+
+    @Test
+    void createCommentTest_UserNotFound() {
+        int userId = 1;
+        int itemId = 10;
+        CommentDto createDto = CommentDto.builder().build();
+
+        when(userRepository.findById(eq(userId))).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
+            itemService.createComment(createDto, userId, itemId);
+        });
+
+        verify(userRepository, times(1)).findById(eq(userId));
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
+    }
+
+    @Test
+    void createCommentTest_ItemNotFound() {
+        int userId = 1;
+        int itemId = 10;
+        CommentDto createDto = CommentDto.builder().build();
+
+        User user = getUser(userId);
+
+        when(userRepository.findById(eq(userId))).thenReturn(Optional.ofNullable(user));
+        when(itemRepository.findById(eq(itemId))).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
+            itemService.createComment(createDto, userId, itemId);
+        });
+
+        verify(userRepository, times(1)).findById(eq(userId));
+        verify(itemRepository, times(1)).findById(eq(itemId));
         verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
     }
 
@@ -203,6 +273,22 @@ public class ItemServiceTest {
         verify(itemRepository, times(1)).findById(eq(item.getId()));
         verify(bookingRepository, times(1)).findAllByItemId(eq(item.getId()));
         verify(commentRepository, times(1)).findAllByItemId(eq(item.getId()));
+        verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
+    }
+
+
+    @Test
+    void getByIdTest_ItemNotFound() {
+        int userId = 1;
+        int itemId = 10;
+
+        when(itemRepository.findById(eq(itemId))).thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> {
+            itemService.getById(userId, itemId);
+        });
+
+        verify(itemRepository, times(1)).findById(eq(itemId));
         verifyNoMoreInteractions(itemRepository, userRepository, bookingRepository, commentRepository, itemRequestRepository);
     }
 
