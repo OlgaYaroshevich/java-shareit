@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDto getById(long userId) {
+    public UserDto getById(int userId) {
         return userRepository.findById(userId)
                 .map(UserMapper::toDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(UserDto userDto, long userId) {
+    public UserDto update(UserDto userDto, int userId) {
         User stored = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Optional.ofNullable(userDto.getName()).ifPresent(stored::setName);
         Optional.ofNullable(userDto.getEmail()).ifPresent(stored::setEmail);
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(long userId) {
+    public void delete(int userId) {
         userRepository.deleteById(userId);
     }
 

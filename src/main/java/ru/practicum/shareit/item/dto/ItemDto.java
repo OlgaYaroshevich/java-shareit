@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Builder
 public class ItemDto {
-    private Long id;
+    private Integer id;
     @NotBlank(message = "Имя не должно быть пустым")
     private String name;
     @NotBlank(message = "Описание не должно быть пустым")
@@ -20,11 +20,12 @@ public class ItemDto {
     private ItemBooking nextBooking;
     private ItemBooking lastBooking;
     private List<CommentDto> comments;
+    private Integer requestId;
 
     @Data
     @Builder
     public static class ItemBooking {
-        private Long id;
-        private Long bookerId;
+        private Integer id;
+        private Integer bookerId;
     }
 }
