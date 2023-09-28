@@ -9,7 +9,8 @@ import ru.practicum.shareit.request.dto.ItemRequestGetResponseDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -21,15 +22,15 @@ public class ItemRequestController {
 
     @GetMapping
     public List<ItemRequestGetResponseDto> getAllByOwnerId(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                           @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                           @RequestParam(defaultValue = "20") @Min(1) int size) {
+                                                           @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                           @RequestParam(defaultValue = "20") @Positive int size) {
         return itemRequestService.getAllByRequestorId(userId, from, size);
     }
 
     @GetMapping("/all")
     public List<ItemRequestGetResponseDto> getAll(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                  @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                  @RequestParam(defaultValue = "20") @Min(1) int size) {
+                                                  @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                  @RequestParam(defaultValue = "20") @Positive int size) {
         return itemRequestService.getAll(userId, from, size);
     }
 

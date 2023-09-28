@@ -9,7 +9,8 @@ import ru.practicum.shareit.booking.dto.RequestBookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -28,8 +29,8 @@ public class BookingController {
     @GetMapping()
     public List<BookingResponseDto> getAllByState(@RequestParam(defaultValue = "ALL")
                                                   @Valid RequestBookingStatus state,
-                                                  @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                  @RequestParam(defaultValue = "20") @Min(1) int size,
+                                                  @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                  @RequestParam(defaultValue = "20") @Positive int size,
                                                   @RequestHeader("X-Sharer-User-Id") int userId) {
         return bookingService.getAllByState(state, userId, from, size);
     }
@@ -37,8 +38,8 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingResponseDto> getAllByStateForOwner(@RequestParam(defaultValue = "ALL")
                                                           @Valid RequestBookingStatus state,
-                                                          @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                          @RequestParam(defaultValue = "20") @Min(1) int size,
+                                                          @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                          @RequestParam(defaultValue = "20") @Positive int size,
                                                           @RequestHeader("X-Sharer-User-Id") int userId) {
         return bookingService.getAllByStateForOwner(state, userId, from, size);
     }

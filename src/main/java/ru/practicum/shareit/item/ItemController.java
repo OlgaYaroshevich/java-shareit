@@ -7,7 +7,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -36,15 +37,15 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAllByOwnerId(@RequestHeader("X-Sharer-User-Id") int userId,
-                                         @RequestParam(defaultValue = "0") @Min(0) int from,
-                                         @RequestParam(defaultValue = "20") @Min(1) int size) {
+                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "20") @Positive int size) {
         return itemService.getAllByOwnerId(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> getAllBySearchText(@RequestParam(name = "text") String searchText,
-                                            @RequestParam(defaultValue = "0") @Min(0) int from,
-                                            @RequestParam(defaultValue = "20") @Min(1) int size) {
+                                            @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                            @RequestParam(defaultValue = "20") @Positive int size) {
         return itemService.getAllBySearchText(searchText, from, size);
     }
 
