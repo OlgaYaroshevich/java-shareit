@@ -7,6 +7,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -16,42 +18,46 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") int userId, @Valid @RequestBody ItemDto itemDto) {
         return itemService.create(itemDto, userId);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto createComment(@PathVariable long itemId,
-                                    @RequestHeader("X-Sharer-User-Id") long userId,
+    public CommentDto createComment(@PathVariable int itemId,
+                                    @RequestHeader("X-Sharer-User-Id") int userId,
                                     @Valid @RequestBody CommentDto commentDto) {
         return itemService.createComment(commentDto, userId, itemId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable long itemId) {
+    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") int userId,
+                           @PathVariable int itemId) {
         return itemService.getById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllByOwnerId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getAllByOwnerId(userId);
+    public List<ItemDto> getAllByOwnerId(@RequestHeader("X-Sharer-User-Id") int userId,
+                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "20") @Positive int size) {
+        return itemService.getAllByOwnerId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getAllBySearchText(@RequestParam(name = "text") String searchText) {
-        return itemService.getAllBySearchText(searchText);
+    public List<ItemDto> getAllBySearchText(@RequestParam(name = "text") String searchText,
+                                            @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                            @RequestParam(defaultValue = "20") @Positive int size) {
+        return itemService.getAllBySearchText(searchText, from, size);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@PathVariable long itemId,
-                          @RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto update(@PathVariable int itemId,
+                          @RequestHeader("X-Sharer-User-Id") int userId,
                           @RequestBody ItemDto itemDto) {
         return itemService.update(itemDto, itemId, userId);
     }
 
     @DeleteMapping("/{itemId}")
-    public void delete(@PathVariable long itemId) {
+    public void delete(@PathVariable int itemId) {
         itemService.delete(itemId);
     }
 }
