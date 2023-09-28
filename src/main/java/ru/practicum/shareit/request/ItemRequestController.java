@@ -21,15 +21,15 @@ public class ItemRequestController {
 
     @GetMapping
     public List<ItemRequestGetResponseDto> getAllByOwnerId(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                           @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
-                                                           @RequestParam(required = false, defaultValue = "20") @Min(1) int size) {
+                                                           @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                           @RequestParam(defaultValue = "20") @Min(1) int size) {
         return itemRequestService.getAllByRequestorId(userId, from, size);
     }
 
     @GetMapping("/all")
     public List<ItemRequestGetResponseDto> getAll(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                  @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
-                                                  @RequestParam(required = false, defaultValue = "20") @Min(1) int size) {
+                                                  @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                  @RequestParam(defaultValue = "20") @Min(1) int size) {
         return itemRequestService.getAll(userId, from, size);
     }
 
